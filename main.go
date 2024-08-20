@@ -147,13 +147,13 @@ func (as *AppState) buildTests() {
 	}
 
 	for runIndex, runPodList := range as.runs {
-		//numPods := len(runPodList.pods)
+		numPods := len(runPodList.pods)
 		// build pods
 		for _, podEntry := range runPodList.pods {
 			podIndex := podEntry.podIndex
 			fmt.Printf("POD name %s replicas %d\n", as.config.PodSet[podIndex].Name, as.config.PodSet[podIndex].Replicas)
 			for replica := 0; replica < as.config.PodSet[podIndex].Replicas; replica++ {
-				podName := fmt.Sprintf("%s-%d-%d-%d", as.config.PodSet[podIndex].Name, podEntry.totalSize, runIndex, replica)
+				podName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Name, podEntry.totalSize, runIndex)
 				fileName := fmt.Sprintf("./pods/%s.yaml", podName)
 
 				_, error := os.Stat(fileName)
@@ -180,7 +180,7 @@ func (as *AppState) buildTests() {
 				}
 				for container := 0; container < len(as.config.PodSet[podIndex].Containers); container++ {
 					if container == 0 {
-						containerName := fmt.Sprintf("%s-%d-%d-%d", as.config.PodSet[podIndex].Containers[0].Name, podEntry.containerZeroSize, runIndex, replica)
+						containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[0].Name, podEntry.containerZeroSize, runIndex)
 						if _, err := f.Write([]byte(fmt.Sprintf("      - name: %s # Main container\n         image: nginx # Use the nginx image\n", containerName))); err != nil {
 							log.Fatal(err)
 						}
@@ -202,7 +202,7 @@ func (as *AppState) buildTests() {
 							log.Fatal(err)
 						}
 					} else { //sidecar
-						containerName := fmt.Sprintf("%s-%d-%d-%d", as.config.PodSet[podIndex].Containers[1].Name, podEntry.containerZeroSize, runIndex, replica)
+						containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[1].Name, podEntry.containerZeroSize, runIndex)
 						if _, err := f.Write([]byte(fmt.Sprintf("     - name: %s # # Sidecar container\n         image: alpine/socat # Use the alpine/socat image\n", containerName))); err != nil {
 							log.Fatal(err)
 						}
@@ -237,38 +237,98 @@ func (as *AppState) buildTests() {
 
 		}
 
-		/*
+		orderList := []SchedPods{}
+		for outer := 0; outer < numPods; outer++ {
+			newPodList := SchedPods{}
+			orderList = append(orderList, newPodList)
+			for inner := 0; inner < numPods; inner++ {
+				newPodSet := PodEntry{}
+				orderList[outer].pods = append(orderList[outer].pods, newPodSet)
+			}
+		}
 
-			orderList := []SchedPods{}
-			for outer := 0; outer < numPods; outer++ {
-				newPodList := SchedPods{}
-				orderList = append(orderList, newPodList)
-				for inner := 0; inner < numPods; inner++ {
-					newPodSet := PodEntry{}
-					orderList[outer].pods = append(orderList[outer].pods, newPodSet)
+		for i := 0; i < numPods; i++ {
+			s := i
+			for x := 0; x < numPods; x++ {
+				orderList[i].pods[x] = runPodList.pods[s]
+				s++
+				if s >= numPods {
+					s = 0
+				}
+			}
+		}
+
+		//proces orderlist
+		for orderEntry := 0; orderEntry < numPods; orderEntry++ {
+			//podIndex := runPodList.pods[i].podIndex
+			//totalSize := runPodList.pods[i].totalSize
+			//podName := as.config.PodSet[podIndex].Name
+			//podReplicas := as.config.PodSet[podIndex].Replicas
+			testName := fmt.Sprintf("run-%d-%d", runIndex, orderEntry)
+			fileName := fmt.Sprintf("test/%s/%s/config.yml", as.config.Topology.Name, testName)
+
+			testBaseDir = fmt.Sprintf("./test/%s/%s", as.config.Topology.Name, testName)
+			if _, err := os.Stat(testBaseDir); err != nil {
+				err := os.Mkdir(testBaseDir, 0755)
+				if err != nil {
+					fmt.Printf("mkdir %s faled\n", testBaseDir)
+					return
 				}
 			}
 
-			for i := 0; i < numPods; i++ {
-				s := i
-				for x := 0; x < numPods; x++ {
-					orderList[i].pods[x] = runPodList.pods[s]
-					s++
-					if s >= numPods {
-						s = 0
-					}
+			_, error := os.Stat(fileName)
+			// check if error is "file not exists"
+			if !os.IsNotExist(error) {
+				err := os.Remove(fileName)
+				if err != nil {
+					log.Fatal(err)
 				}
 			}
-			//proces orderlist
-			for i := 0; i < numPods; i++ {
-				podIndex := runPodList.pods[i].podIndex
-				totalSize := runPodList.pods[i].totalSize
-				podName := as.config.PodSet[podIndex].Name
-				podReplicas := as.config.PodSet[podIndex].Replicas
+			//ok to build file now
+			f, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte(fmt.Sprintf("name: \"%s\"\n", testName))); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte(fmt.Sprintf("version: \"%s\"\n", "1.0.0"))); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte(fmt.Sprintf("active: \"%s\"\n", "yes"))); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte(fmt.Sprintf("description: \"%s\"\n", " "))); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte(fmt.Sprintf("add: \"%s\"\n", " "))); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte(fmt.Sprintf("remove: \"%s\"\n", " "))); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte("run: \" ")); err != nil {
+				log.Fatal(err)
+			}
+			for pod := 0; pod < numPods; pod++ {
+				podIndex := orderList[orderEntry].pods[pod].podIndex
+				totalSize := orderList[orderEntry].pods[pod].totalSize
+				podName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Name, totalSize, runIndex)
 
+				if _, err := f.Write([]byte(fmt.Sprintf("%s, ", podName))); err != nil {
+					log.Fatal(err)
+				}
 
 			}
-		*/
+			if _, err := f.Write([]byte("\"\n")); err != nil {
+				log.Fatal(err)
+			}
+
+			if err := f.Close(); err != nil {
+				log.Fatal(err)
+			}
+
+		}
 
 	}
 
