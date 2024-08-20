@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: DB-2-31-0
+spec:
+  containers:
+      - name: db-2-31-0 # Main container
+         image: nginx # Use the nginx image
+         resources:
+            requests:
+               memory: "1064Mi"
+               cpu: "2"
+            limits:
+               memory: "1064Mi"
+               cpu: "2"
+         ports:
+						  - containerPort: 80 # Expose port 80
+         command: ["/bin/sh"] # Override the default command
+         args: ["-c", "while true; do echo \"$(date) Hello from nginx\"; sleep 1; done | tee /var/log/nginx/access.log"]

@@ -1,0 +1,76 @@
+{
+    "topology": {
+        "name":"Siena",
+        "sockets":1,
+        "sockNuma":1,
+        "l3GroupPer":8,
+        "coresPerL3": 8,
+        "smtOn": true
+    },
+    "reservedCores": [0,1,2,3],
+    "podset": [
+        {
+             "name": "MG", 
+             "replicas": 3,
+             "containers": [
+                {
+                    "name":"mg" ,
+                    "sizes": [20,22,24]   
+                },
+                {
+                    "name":"mg-sc" ,
+                    "sizes": [2]   
+                }                 
+             ]
+        },
+        { 
+            "name": "OAM",
+            "replicas": 1,
+            "containers": [
+                {
+                    "name":"oam" ,
+                    "sizes": [8,12,16]   
+                },
+                {
+                    "name":"oam-sc" ,
+                    "sizes": [2]   
+                }                               
+            ]
+        },
+        { 
+            "name": "LB",
+            "replicas": 1,
+            "containers": [
+                {
+                    "name":"lb" ,
+                    "sizes": [8,12,16]   
+                }                            
+            ]
+        },   
+        { 
+            "name": "P-DB",
+            "replicas": 1,
+            "containers": [
+                {
+                    "name":"p-db" ,
+                    "sizes": [8,12,16]   
+                }                            
+            ]
+        }, 
+        { 
+            "name": "DB",
+            "replicas": 1,
+            "containers": [
+                {
+                    "name":"db" ,
+                    "sizes": [2]   
+                }                            
+            ]
+        }     
+    ]
+        
+ 
+   
+
+
+}
