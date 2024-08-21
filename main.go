@@ -315,7 +315,11 @@ func (as *AppState) buildTests() {
 				totalSize := orderList[orderEntry].pods[pod].totalSize
 				podName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Name, totalSize, runIndex)
 
-				if _, err := f.Write([]byte(fmt.Sprintf("%s, ", podName))); err != nil {
+				if pod != 0 {
+					f.Write([]byte(", "))
+				}
+
+				if _, err := f.Write([]byte(fmt.Sprintf("%s", podName))); err != nil {
 					log.Fatal(err)
 				}
 
