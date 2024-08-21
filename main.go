@@ -181,7 +181,7 @@ func (as *AppState) buildTests() {
 				for container := 0; container < len(as.config.PodSet[podIndex].Containers); container++ {
 					if container == 0 {
 						containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[0].Name, podEntry.containerZeroSize, runIndex)
-						if _, err := f.Write([]byte(fmt.Sprintf("      - name: %s # Main container\n         image: nginx # Use the nginx image\n", containerName))); err != nil {
+						if _, err := f.Write([]byte(fmt.Sprintf("      - name: %s # Main container\n         image: nginx \n", containerName))); err != nil {
 							log.Fatal(err)
 						}
 						if _, err := f.Write([]byte("         resources:\n            requests:\n               memory: \"1064Mi\"\n")); err != nil {
