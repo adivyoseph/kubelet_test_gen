@@ -203,7 +203,7 @@ func (as *AppState) buildTests() {
 						}
 					} else { //sidecar
 						containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[1].Name, podEntry.containerZeroSize, runIndex)
-						if _, err := f.Write([]byte(fmt.Sprintf("     - name: %s # # Sidecar container\n         image: alpine/socat # Use the alpine/socat image\n", containerName))); err != nil {
+						if _, err := f.Write([]byte(fmt.Sprintf("  - name: %s # # Sidecar container\n    image: alpine/socat # Use the alpine/socat image\n", containerName))); err != nil {
 							log.Fatal(err)
 						}
 						if _, err := f.Write([]byte("    resources:\n            requests:\n               memory: \"64Mi\"\n")); err != nil {
