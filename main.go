@@ -45,6 +45,7 @@ type ConfigStruct struct {
 
 type PodEntry struct {
 	podIndex          int
+	replica           int
 	containerZeroSize int
 	totalSize         int
 }
@@ -102,9 +103,10 @@ func (config *ConfigStruct) getConfig(fileName string) int {
 	return totalCpus
 }
 
-func (p *SchedPods) addPod(config *ConfigStruct, podIndex int, index int) {
+func (p *SchedPods) addPod(config *ConfigStruct, podIndex int, index int, replica int) {
 	podEntry := PodEntry{}
 	podEntry.podIndex = podIndex
+	podEntry.replica = replica
 	podEntry.containerZeroSize = config.PodSet[podIndex].Containers[0].Sizes[index]
 	podEntry.totalSize = config.PodSet[podIndex].Containers[0].Sizes[index]
 	if len(config.PodSet[podIndex].Containers) > 1 {
@@ -151,90 +153,88 @@ func (as *AppState) buildTests() {
 		// build pods
 		for _, podEntry := range runPodList.pods {
 			podIndex := podEntry.podIndex
-			fmt.Printf("POD name %s replicas %d\n", as.config.PodSet[podIndex].Name, as.config.PodSet[podIndex].Replicas)
-			for replica := 0; replica < as.config.PodSet[podIndex].Replicas; replica++ {
-				podName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Name, podEntry.totalSize, runIndex)
-				fileName := fmt.Sprintf("./pods/%s.yaml", podName)
+			replica := podEntry.replica
+			fmt.Printf("POD name %s replicas %d\n", as.config.PodSet[podIndex].Name, replica)
+			podName := fmt.Sprintf("%s-%d-%d-%d", as.config.PodSet[podIndex].Name, podEntry.totalSize, runIndex, replica)
+			fileName := fmt.Sprintf("./pods/%s.yaml", podName)
 
-				_, error := os.Stat(fileName)
-				// check if error is "file not exists"
-				if !os.IsNotExist(error) {
-					err := os.Remove(fileName)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-
-				f, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0644)
+			_, error := os.Stat(fileName)
+			// check if error is "file not exists"
+			if !os.IsNotExist(error) {
+				err := os.Remove(fileName)
 				if err != nil {
-					log.Fatal(err)
-				}
-				if _, err := f.Write([]byte("---\n")); err != nil {
-					log.Fatal(err)
-				}
-				if _, err := f.Write([]byte(fmt.Sprintf("apiVersion: v1\nkind: Pod\nmetadata:\n  name: %s\n", podName))); err != nil {
-					log.Fatal(err)
-				}
-				if _, err := f.Write([]byte("spec:\n  containers:\n")); err != nil {
-					log.Fatal(err)
-				}
-				for container := 0; container < len(as.config.PodSet[podIndex].Containers); container++ {
-					if container == 0 {
-						containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[0].Name, podEntry.containerZeroSize, runIndex)
-						if _, err := f.Write([]byte(fmt.Sprintf("  - name: %s\n    image: nginx \n", containerName))); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte("    resources:\n            requests:\n               memory: \"1064Mi\"\n")); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n            limits:\n               memory: \"1064Mi\"\n",
-							podEntry.containerZeroSize))); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n    ports:\n",
-							podEntry.containerZeroSize))); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte("            - containerPort: 80 # Expose port 80\n    command: [\"/bin/sh\"] # Override the default command\n")); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte("    args: [\"-c\", \"while true; do echo \\\"$(date) Hello from nginx\\\"; sleep 1; done | tee /var/log/nginx/access.log\"]\n")); err != nil {
-							log.Fatal(err)
-						}
-					} else { //sidecar
-						containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[1].Name, podEntry.containerZeroSize, runIndex)
-						if _, err := f.Write([]byte(fmt.Sprintf("  - name: %s # # Sidecar container\n    image: alpine/socat # Use the alpine/socat image\n", containerName))); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte("    resources:\n            requests:\n               memory: \"64Mi\"\n")); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n            limits:\n               memory: \"64Mi\"\n",
-							podEntry.totalSize-podEntry.containerZeroSize))); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n    ports:\n",
-							podEntry.totalSize-podEntry.containerZeroSize))); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte("            - containerPort: 8080 # Expose port 8080\n    command: [\"socat\"] # Override the default command\n")); err != nil {
-							log.Fatal(err)
-						}
-						if _, err := f.Write([]byte("    args: [\"-v\", \"TCP-LISTEN:8080,fork,reuseaddr\", \"EXEC:\\\"kubectl logs web-server-7f9f8c4b9-6xq8w -c nginx\\\"\"]\n")); err != nil {
-							log.Fatal(err)
-						}
-						//					if _, err := f.Write([]byte("         # Run socat to listen on port 8080 and execute kubectl logs to return the logs from the main container\n")); err != nil {
-						//						log.Fatal(err)
-						//					}
-
-					}
-
-				}
-				if err := f.Close(); err != nil {
 					log.Fatal(err)
 				}
 			}
 
+			f, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte("---\n")); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte(fmt.Sprintf("apiVersion: v1\nkind: Pod\nmetadata:\n  name: %s\n", podName))); err != nil {
+				log.Fatal(err)
+			}
+			if _, err := f.Write([]byte("spec:\n  containers:\n")); err != nil {
+				log.Fatal(err)
+			}
+			for container := 0; container < len(as.config.PodSet[podIndex].Containers); container++ {
+				if container == 0 {
+					containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[0].Name, podEntry.containerZeroSize, runIndex)
+					if _, err := f.Write([]byte(fmt.Sprintf("  - name: %s\n    image: nginx \n", containerName))); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte("    resources:\n            requests:\n               memory: \"1064Mi\"\n")); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n            limits:\n               memory: \"1064Mi\"\n",
+						podEntry.containerZeroSize))); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n    ports:\n",
+						podEntry.containerZeroSize))); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte("            - containerPort: 80 # Expose port 80\n    command: [\"/bin/sh\"] # Override the default command\n")); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte("    args: [\"-c\", \"while true; do echo \\\"$(date) Hello from nginx\\\"; sleep 1; done | tee /var/log/nginx/access.log\"]\n")); err != nil {
+						log.Fatal(err)
+					}
+				} else { //sidecar
+					containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[1].Name, podEntry.containerZeroSize, runIndex)
+					if _, err := f.Write([]byte(fmt.Sprintf("  - name: %s # # Sidecar container\n    image: alpine/socat # Use the alpine/socat image\n", containerName))); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte("    resources:\n            requests:\n               memory: \"64Mi\"\n")); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n            limits:\n               memory: \"64Mi\"\n",
+						podEntry.totalSize-podEntry.containerZeroSize))); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n    ports:\n",
+						podEntry.totalSize-podEntry.containerZeroSize))); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte("            - containerPort: 8080 # Expose port 8080\n    command: [\"socat\"] # Override the default command\n")); err != nil {
+						log.Fatal(err)
+					}
+					if _, err := f.Write([]byte("    args: [\"-v\", \"TCP-LISTEN:8080,fork,reuseaddr\", \"EXEC:\\\"kubectl logs web-server-7f9f8c4b9-6xq8w -c nginx\\\"\"]\n")); err != nil {
+						log.Fatal(err)
+					}
+					//					if _, err := f.Write([]byte("         # Run socat to listen on port 8080 and execute kubectl logs to return the logs from the main container\n")); err != nil {
+					//						log.Fatal(err)
+					//					}
+
+				}
+
+			}
+			if err := f.Close(); err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		orderList := []SchedPods{}
@@ -313,7 +313,8 @@ func (as *AppState) buildTests() {
 			for pod := 0; pod < numPods; pod++ {
 				podIndex := orderList[orderEntry].pods[pod].podIndex
 				totalSize := orderList[orderEntry].pods[pod].totalSize
-				podName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Name, totalSize, runIndex)
+				replica := orderList[orderEntry].pods[pod].replica
+				podName := fmt.Sprintf("%s-%d-%d-%d", as.config.PodSet[podIndex].Name, totalSize, runIndex, replica)
 
 				if pod != 0 {
 					f.Write([]byte(", "))
@@ -372,12 +373,12 @@ func (as *AppState) buildPodSets() {
 					for pode := 0; pode < len(as.config.PodSet[4].Containers[0].Sizes); pode++ {
 						podsNew := SchedPods{}
 						for rep := 0; rep < as.config.PodSet[0].Replicas; rep++ {
-							podsNew.addPod(&as.config, 0, poda)
+							podsNew.addPod(&as.config, 0, poda, rep)
 						}
-						podsNew.addPod(&as.config, 1, podb)
-						podsNew.addPod(&as.config, 2, podc)
-						podsNew.addPod(&as.config, 3, podd)
-						podsNew.addPod(&as.config, 4, pode)
+						podsNew.addPod(&as.config, 1, podb, 0)
+						podsNew.addPod(&as.config, 2, podc, 0)
+						podsNew.addPod(&as.config, 3, podd, 0)
+						podsNew.addPod(&as.config, 4, pode, 0)
 						//fmt.Printf("\n")
 						if podsNew.totalSize > (as.totalCpus - work - 2) {
 							fmt.Printf(" buildPodSets too big %d %v\n", podsNew.totalSize, podsNew)
