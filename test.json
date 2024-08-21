@@ -10,7 +10,7 @@
     "reservedCores": [0,1,2,3],
     "podset": [
         {
-             "name": "MG", 
+             "name": "mg", 
              "replicas": 3,
              "containers": [
                 {
@@ -24,7 +24,7 @@
              ]
         },
         { 
-            "name": "OAM",
+            "name": "oam",
             "replicas": 1,
             "containers": [
                 {
@@ -38,7 +38,7 @@
             ]
         },
         { 
-            "name": "LB",
+            "name": "lb",
             "replicas": 1,
             "containers": [
                 {
@@ -48,7 +48,7 @@
             ]
         },   
         { 
-            "name": "P-DB",
+            "name": "p-db",
             "replicas": 1,
             "containers": [
                 {
@@ -58,7 +58,7 @@
             ]
         }, 
         { 
-            "name": "DB",
+            "name": "db",
             "replicas": 1,
             "containers": [
                 {

@@ -1,7 +1,0 @@
-name: "run-2-3"
-version: "1.0.0"
-active: "yes"
-description: " "
-add: " "
-remove: " "
-run: " OAM-10-2, LB-8-2, P-DB-16-2, DB-2-2, MG-22-2, MG-22-2, MG-22-2"
