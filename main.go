@@ -195,7 +195,7 @@ func (as *AppState) buildTests() {
 							podEntry.containerZeroSize))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("						  - containerPort: 80 # Expose port 80\n         command: [\"/bin/sh\"] # Override the default command\n")); err != nil {
+						if _, err := f.Write([]byte("            - containerPort: 80 # Expose port 80\n         command: [\"/bin/sh\"] # Override the default command\n")); err != nil {
 							log.Fatal(err)
 						}
 						if _, err := f.Write([]byte("         args: [\"-c\", \"while true; do echo \\\"$(date) Hello from nginx\\\"; sleep 1; done | tee /var/log/nginx/access.log\"]\n")); err != nil {
@@ -217,7 +217,7 @@ func (as *AppState) buildTests() {
 							podEntry.totalSize-podEntry.containerZeroSize))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("						  - containerPort: 8080 # Expose port 8080\n         command: [\"socat\"] # Override the default command\n")); err != nil {
+						if _, err := f.Write([]byte("            - containerPort: 8080 # Expose port 8080\n         command: [\"socat\"] # Override the default command\n")); err != nil {
 							log.Fatal(err)
 						}
 						if _, err := f.Write([]byte("         args: [\"-v\", \"TCP-LISTEN:8080,fork,reuseaddr\", \"EXEC:\\\"kubectl logs web-server-7f9f8c4b9-6xq8w -c nginx\\\"\"]\n")); err != nil {
