@@ -1,0 +1,7 @@
+name: "run-64-4"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " lb-8-64, p-db-8-64, db-2-64, mg-26-64, mg-26-64, mg-26-64, oam-18-64"

@@ -1,0 +1,7 @@
+name: "run-35-2"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-24-35, oam-10-35, lb-16-35, p-db-16-35, db-2-35, mg-24-35, mg-24-35"

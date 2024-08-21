@@ -1,0 +1,7 @@
+name: "run-28-6"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " db-2-28, mg-24-28, mg-24-28, mg-24-28, oam-10-28, lb-8-28, p-db-12-28"

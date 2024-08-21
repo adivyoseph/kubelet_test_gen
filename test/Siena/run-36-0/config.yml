@@ -1,0 +1,7 @@
+name: "run-36-0"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-24-36, mg-24-36, mg-24-36, oam-14-36, lb-8-36, p-db-8-36, db-2-36"

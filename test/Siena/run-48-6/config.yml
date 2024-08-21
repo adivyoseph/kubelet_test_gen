@@ -1,0 +1,7 @@
+name: "run-48-6"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " db-2-48, mg-24-48, mg-24-48, mg-24-48, oam-18-48, lb-12-48, p-db-12-48"

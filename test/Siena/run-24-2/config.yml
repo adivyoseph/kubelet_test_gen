@@ -1,0 +1,7 @@
+name: "run-24-2"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-22-24, oam-18-24, lb-16-24, p-db-8-24, db-2-24, mg-22-24, mg-22-24"

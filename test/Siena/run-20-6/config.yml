@@ -1,0 +1,7 @@
+name: "run-20-6"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " db-2-20, mg-22-20, mg-22-20, mg-22-20, oam-18-20, lb-8-20, p-db-16-20"

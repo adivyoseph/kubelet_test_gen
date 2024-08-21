@@ -1,0 +1,7 @@
+name: "run-32-4"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " lb-12-32, p-db-16-32, db-2-32, mg-24-32, mg-24-32, mg-24-32, oam-10-32"

@@ -1,0 +1,7 @@
+name: "run-10-0"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-22-10, mg-22-10, mg-22-10, oam-14-10, lb-8-10, p-db-12-10, db-2-10"

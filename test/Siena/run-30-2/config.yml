@@ -1,0 +1,7 @@
+name: "run-30-2"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-24-30, oam-10-30, lb-12-30, p-db-8-30, db-2-30, mg-24-30, mg-24-30"

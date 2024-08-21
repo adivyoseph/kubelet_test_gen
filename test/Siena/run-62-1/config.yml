@@ -1,0 +1,7 @@
+name: "run-62-1"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-26-62, mg-26-62, oam-14-62, lb-12-62, p-db-12-62, db-2-62, mg-26-62"

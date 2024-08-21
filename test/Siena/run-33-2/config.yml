@@ -1,0 +1,7 @@
+name: "run-33-2"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-24-33, oam-10-33, lb-16-33, p-db-8-33, db-2-33, mg-24-33, mg-24-33"

@@ -1,0 +1,7 @@
+name: "run-60-0"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-26-60, mg-26-60, mg-26-60, oam-14-60, lb-8-60, p-db-16-60, db-2-60"

@@ -1,0 +1,7 @@
+name: "run-40-2"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-24-40, oam-14-40, lb-12-40, p-db-12-40, db-2-40, mg-24-40, mg-24-40"

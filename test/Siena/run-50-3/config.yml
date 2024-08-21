@@ -1,0 +1,7 @@
+name: "run-50-3"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " oam-10-50, lb-8-50, p-db-8-50, db-2-50, mg-26-50, mg-26-50, mg-26-50"

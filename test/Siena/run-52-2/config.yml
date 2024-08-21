@@ -1,0 +1,7 @@
+name: "run-52-2"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " mg-26-52, oam-10-52, lb-8-52, p-db-16-52, db-2-52, mg-26-52, mg-26-52"

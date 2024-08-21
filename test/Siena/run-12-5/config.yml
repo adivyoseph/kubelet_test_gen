@@ -1,0 +1,7 @@
+name: "run-12-5"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " p-db-8-12, db-2-12, mg-22-12, mg-22-12, mg-22-12, oam-14-12, lb-12-12"

@@ -1,0 +1,7 @@
+name: "run-42-5"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " p-db-8-42, db-2-42, mg-24-42, mg-24-42, mg-24-42, oam-14-42, lb-16-42"

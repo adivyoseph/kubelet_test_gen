@@ -1,0 +1,7 @@
+name: "run-27-5"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " p-db-8-27, db-2-27, mg-24-27, mg-24-27, mg-24-27, oam-10-27, lb-8-27"

@@ -1,0 +1,7 @@
+name: "run-47-3"
+version: "1.0.0"
+active: "yes"
+description: " "
+add: " "
+remove: " "
+run: " oam-18-47, lb-12-47, p-db-8-47, db-2-47, mg-24-47, mg-24-47, mg-24-47"

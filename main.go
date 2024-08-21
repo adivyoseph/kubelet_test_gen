@@ -181,24 +181,24 @@ func (as *AppState) buildTests() {
 				for container := 0; container < len(as.config.PodSet[podIndex].Containers); container++ {
 					if container == 0 {
 						containerName := fmt.Sprintf("%s-%d-%d", as.config.PodSet[podIndex].Containers[0].Name, podEntry.containerZeroSize, runIndex)
-						if _, err := f.Write([]byte(fmt.Sprintf("      - name: %s\n         image: nginx \n", containerName))); err != nil {
+						if _, err := f.Write([]byte(fmt.Sprintf("  - name: %s\n    image: nginx \n", containerName))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("         resources:\n            requests:\n               memory: \"1064Mi\"\n")); err != nil {
+						if _, err := f.Write([]byte("    resources:\n            requests:\n               memory: \"1064Mi\"\n")); err != nil {
 							log.Fatal(err)
 						}
 						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n            limits:\n               memory: \"1064Mi\"\n",
 							podEntry.containerZeroSize))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n         ports:\n",
+						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n    ports:\n",
 							podEntry.containerZeroSize))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("            - containerPort: 80 # Expose port 80\n         command: [\"/bin/sh\"] # Override the default command\n")); err != nil {
+						if _, err := f.Write([]byte("            - containerPort: 80 # Expose port 80\n    command: [\"/bin/sh\"] # Override the default command\n")); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("         args: [\"-c\", \"while true; do echo \\\"$(date) Hello from nginx\\\"; sleep 1; done | tee /var/log/nginx/access.log\"]\n")); err != nil {
+						if _, err := f.Write([]byte("    args: [\"-c\", \"while true; do echo \\\"$(date) Hello from nginx\\\"; sleep 1; done | tee /var/log/nginx/access.log\"]\n")); err != nil {
 							log.Fatal(err)
 						}
 					} else { //sidecar
@@ -206,21 +206,21 @@ func (as *AppState) buildTests() {
 						if _, err := f.Write([]byte(fmt.Sprintf("     - name: %s # # Sidecar container\n         image: alpine/socat # Use the alpine/socat image\n", containerName))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("         resources:\n            requests:\n               memory: \"64Mi\"\n")); err != nil {
+						if _, err := f.Write([]byte("    resources:\n            requests:\n               memory: \"64Mi\"\n")); err != nil {
 							log.Fatal(err)
 						}
 						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n            limits:\n               memory: \"64Mi\"\n",
 							podEntry.totalSize-podEntry.containerZeroSize))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n         ports:\n",
+						if _, err := f.Write([]byte(fmt.Sprintf("               cpu: \"%d\"\n    ports:\n",
 							podEntry.totalSize-podEntry.containerZeroSize))); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("            - containerPort: 8080 # Expose port 8080\n         command: [\"socat\"] # Override the default command\n")); err != nil {
+						if _, err := f.Write([]byte("            - containerPort: 8080 # Expose port 8080\n    command: [\"socat\"] # Override the default command\n")); err != nil {
 							log.Fatal(err)
 						}
-						if _, err := f.Write([]byte("         args: [\"-v\", \"TCP-LISTEN:8080,fork,reuseaddr\", \"EXEC:\\\"kubectl logs web-server-7f9f8c4b9-6xq8w -c nginx\\\"\"]\n")); err != nil {
+						if _, err := f.Write([]byte("    args: [\"-v\", \"TCP-LISTEN:8080,fork,reuseaddr\", \"EXEC:\\\"kubectl logs web-server-7f9f8c4b9-6xq8w -c nginx\\\"\"]\n")); err != nil {
 							log.Fatal(err)
 						}
 						//					if _, err := f.Write([]byte("         # Run socat to listen on port 8080 and execute kubectl logs to return the logs from the main container\n")); err != nil {
